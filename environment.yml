@@ -54,7 +54,6 @@ dependencies:
   - markupsafe=1.1.1=py36hfa6e2cd_0
   - matplotlib-base=3.1.0=py36h2852a4a_1
   - mccabe=0.6.1=py_1
-  - mistune=0.8.4=py36hfa6e2cd_1000
   - mkl=2019.4=245
   - mock=3.0.5=py36_0
   - msys2-conda-epoch=20160418=1
@@ -84,7 +83,6 @@ dependencies:
   - pyparsing=2.4.0=py_0
   - pyrsistent=0.15.2=py36hfa6e2cd_0
   - pysocks=1.7.0=py36_0
-  - python=3.6.7=he025d50_1004
   - python-cufflinks=0.14.5=py_0
   - python-dateutil=2.8.0=py_0
   - pytz=2019.1=py_0
@@ -107,9 +105,7 @@ dependencies:
   - tornado=6.0.2=py36hfa6e2cd_0
   - traitlets=4.3.2=py36_1000
   - urllib3=1.24.3=py36_0
-  - vc=14.1=h0510ff6_4
   - vcrpy=2.0.1=py36_1000
-  - vs2015_runtime=14.15.26706=h3a45250_4
   - wcwidth=0.1.7=py_1
   - webencodings=0.5.1=py_1
   - wheel=0.33.4=py36_0
@@ -125,5 +121,6 @@ dependencies:
     - cite2c==0.2.1
     - jupyterlab-code-formatter==0.2.1
     - rauth==0.7.3
+    - mistune=0.8.4=py36hfa6e2cd_1000
 prefix: C:\Users\Iyed\Miniconda3\envs\trade_analysis
 
