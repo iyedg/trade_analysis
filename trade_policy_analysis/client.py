@@ -55,7 +55,7 @@ class OEC(object):
     @property
     @vcr.use_cassette("fixtures/products_attrs.yaml", record_mode="new_episodes")
     def products_attrs(self):
-        endpoint = f"/attr/{self.classification.lower()}/"
+        endpoint = f"/attr/{self._classification}/"
         r = requests.get(urljoin(self.base_uri, endpoint))
         return pd.DataFrame(json.loads(r.content)["data"])
 
@@ -91,8 +91,41 @@ class OEC(object):
         self._depth = value
         return self
 
+    def __merge_w_countries_attrs(self, df):
+        if "dest_id" in df.columns and "origin_id" in df.columns:
+            return df.merge(
+                on="dest_id",
+                right=self.countries_attrs.rename(
+                    columns=lambda col_name: f"dest_{col_name}"
+                ),
+            ).merge(
+                on="origin_id",
+                right=self.countries_attrs.rename(
+                    columns=lambda col_name: f"origin_{col_name}"
+                ),
+            )
+        elif "dest_id" in df.columns:
+            return df.merge(
+                on="dest_id",
+                right=self.countries_attrs.rename(
+                    columns=lambda col_name: f"dest_{col_name}"
+                ),
+            )
+        elif "origin_id" in df.columns:
+            return df.merge(
+                on="origin_id",
+                right=self.countries_attrs.rename(
+                    columns=lambda col_name: f"origin_{col_name}"
+                ),
+            )
+
+    def __merge_w_products_attrs(self, df):
+        #
+        # if {self.classification}_id is in columns merge with products_attrs
+        pass
+
     @vcr.use_cassette("fixtures/calls.yaml", record_mode="new_episodes")
-    def call(self):
+    def call(self, human=False):
         # At most one of `origin` `destination` and
         # `product` can have a value of "show"
         uri = (
@@ -108,4 +141,50 @@ class OEC(object):
             )
         print(uri)
         response = requests.get(uri)
-        return pd.DataFrame(json.loads(response.content)["data"])
+        ignore_cols = [
+            "export_val_growth_pct_5",
+            "export_val_growth_val",
+            "import_val_growth_pct",
+            "import_val_growth_pct_5",
+            "dest_borders_land",
+            "dest_borders_maritime",
+            "dest_color",
+            "dest_weight",
+            "dest_palette",
+            "dest_image",
+            "dest_image_author",
+            "dest_comtrade_name",
+            "dest_id_num",
+            "dest_image_link",
+            "export_val_growth_pct",
+            "dest_id_2char",
+            "dest_icon",
+            "import_val_growth_val",
+            "export_val_growth_val_5",
+            "hs07_id_len",
+            "dest_id",
+            "dest_display_id",
+            "import_val_growth_val_5",
+            "origin_borders_land",
+            "origin_borders_maritime",
+            "origin_color",
+            "origin_weight",
+            "origin_palette",
+            "origin_image",
+            "origin_image_author",
+            "origin_comtrade_name",
+            "origin_id_num",
+            "origin_image_link",
+            "origin_icon",
+            "origin_id",
+            "origin_id_2char",
+            "origin_display_id",
+        ]
+        return (
+            pd.DataFrame(json.loads(response.content)["data"])
+            .pipe(self.__merge_w_countries_attrs)
+            .pipe(lambda df: df[df.columns.difference(ignore_cols)] if human else df)
+        )
+
+    def __call__(self, *args, **kwargs):
+        return self.call(*args, **kwargs)
