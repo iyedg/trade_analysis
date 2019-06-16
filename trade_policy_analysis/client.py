@@ -2,6 +2,7 @@ import attr
 import requests
 import json
 import pandas as pd
+import numpy as np
 import vcr
 from urllib.parse import urljoin
 
@@ -119,10 +120,49 @@ class OEC(object):
                 ),
             )
 
+    def __detailed_products_attrs(self, df):
+        classification_id_col_name = f"{self._classification}_id"
+        if classification_id_col_name in df.columns:
+            # Extract sections
+            # return (
+            df.assign(
+                section_id=df[classification_id_col_name].str[:2],
+                chapter_id=df[classification_id_col_name].str[:4],
+                grouping_id=df[classification_id_col_name].str[:6],
+                product_id=df[classification_id_col_name].apply(
+                    lambda val: val if len(val) == 8 else np.nan
+                ),
+            )
+        return df
+
     def __merge_w_products_attrs(self, df):
-        #
-        # if {self.classification}_id is in columns merge with products_attrs
-        pass
+        classification_id_col_name = f"{self._classification}_id"
+        if classification_id_col_name in df.columns:
+            # Extract sections
+            return (
+                self.__detailed_products_attrs(df)
+                .merge(
+                    on="section_id",
+                    right=self.products_attrs[["id", "name"]].rename(
+                        columns=lambda x: f"section_{x}"
+                    ),
+                )
+                .merge(
+                    left_on="chapter_id",
+                    right=self.products_attrs[["display_id", "name"]].rename(
+                        columns=lambda x: f"chapter_{x}"
+                    ),
+                    right_on="chapter_display_id",
+                )
+                .merge(
+                    left_on="grouping_id",
+                    right=self.products_attrs[["display_id", "name"]].rename(
+                        columns=lambda x: f"grouping_{x}"
+                    ),
+                    right_on="grouping_display_id",
+                )
+            )
+        return df
 
     @vcr.use_cassette("fixtures/calls.yaml", record_mode="new_episodes")
     def call(self, human=False):
@@ -141,6 +181,7 @@ class OEC(object):
             )
         print(uri)
         response = requests.get(uri)
+        # TODO: more elegant way to filter these
         ignore_cols = [
             "export_val_growth_pct_5",
             "export_val_growth_val",
@@ -161,7 +202,6 @@ class OEC(object):
             "dest_icon",
             "import_val_growth_val",
             "export_val_growth_val_5",
-            "hs07_id_len",
             "dest_id",
             "dest_display_id",
             "import_val_growth_val_5",
@@ -179,10 +219,13 @@ class OEC(object):
             "origin_id",
             "origin_id_2char",
             "origin_display_id",
+            f"{self._classification}_id_len",
         ]
         return (
             pd.DataFrame(json.loads(response.content)["data"])
             .pipe(self.__merge_w_countries_attrs)
+            .pipe(self.__detailed_products_attrs)
+            # .pipe(self.__merge_w_products_attrs)
             .pipe(lambda df: df[df.columns.difference(ignore_cols)] if human else df)
         )
 
