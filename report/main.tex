@@ -1,0 +1,54 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{subfiles}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{tocbibind}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage{csquotes}
+\usepackage[style=apa,sortcites=true,sorting=nyt,backend=biber]{biblatex}
+
+
+\newcommand{\comm}[1] {\begin{small}\textcolor{red}{\textit{#1}}\end{small}\newline}
+\bibliography{references}
+
+\graphicspath{ {plots/} }
+
+\title{Trade policy analysis report\\
+\large Tunis Business School}
+
+\author{Iyed Ghedamsi}
+
+\date{15/06/2019}
+
+\makeatother
+\begin{document}
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+
+\comm{Make sure to compare to a benchmark}
+
+\comm{Tariff distribution plot, Fixed effects model}
+
+\subfile{sections/intro}
+
+\section{Trade flows}
+\subfile{sections/openness}
+
+\section{Tariff profile of the USA}
+\subfile{sections/tariff}
+
+\section{Gravity model}
+
+\newpage
+\printbibliography
+
+\end{document}
