@@ -28,7 +28,7 @@ jupyter-client==5.2.4
 jupyter-contrib-core==0.3.3
 jupyter-core==4.4.0
 jupyter-nbextensions-configurator==0.4.1
-jupyterlab==0.35.6
+jupyterlab==1.2.21
 jupyterlab-code-formatter==0.2.1
 jupyterlab-server==0.2.0
 jupytext==1.1.6
