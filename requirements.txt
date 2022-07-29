@@ -34,7 +34,7 @@ jupyterlab-server==0.2.0
 jupytext==1.1.6
 MarkupSafe==1.1.1
 mccabe==0.6.1
-mistune==0.8.4
+mistune==2.0.3
 mock==3.0.5
 nbconvert==5.5.0
 nbformat==4.4.0
